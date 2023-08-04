@@ -153,6 +153,8 @@ Let's test this route. Make sure you are in the `server` directory, then run
 $ python app.py
 ```
 
+You can also run `flask run` to start the server.
+
 Open a browser window and navigate to 127.0.0.1:5555/demo_json. The browser
 displays the JSON data:
 
@@ -211,6 +213,17 @@ When a dictionary is passed into `make_response()`, Flask automatically
 transforms the dictionary into JSON by calling a method named `jsonify()`. You
 might occasionally see code containing explicit calls to `jsonify()`, since
 older versions of Flask did not automatically call it on dictionaries.
+
+You may see the JSON displayed on a single line if you started the app with
+`flask run`. To display each key/value pair on a separate line, update `app.py`
+to add a configuration setting `app.json.compact = False` as shown below: `
+
+```py
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.json.compact = False
+```
 
 Now let's evolve the view to get the first pet from the `pets` table and use the
 query result for the dictionary values.
@@ -331,6 +344,7 @@ from models import db, Pet
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.json.compact = False
 
 migrate = Migrate(app, db)
 

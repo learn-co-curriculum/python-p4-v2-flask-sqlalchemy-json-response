@@ -142,11 +142,11 @@ if __name__ == '__main__':
 ```
 
 Look carefully at the structure of the Python string assigned to the variable
-`json` within the `demo_json()` route. The Python string itself is enclosed in
+`json` within the `demo_json()` view. The Python string itself is enclosed in
 single quotes, while the keys and values (except for the number) are enclosed in
 double quotes.
 
-Let's test this route. Make sure you are in the `server` directory, then run
+Let's test this view. Make sure you are in the `server` directory, then run
 `app.py`:
 
 ```console
@@ -155,7 +155,8 @@ $ python app.py
 
 You can also run `flask run` to start the server.
 
-Open a browser window and navigate to 127.0.0.1:5555/demo_json. The browser
+Open a browser window and navigate to
+[http://127.0.0.1:5555/demo_json](http://127.0.0.1:5555/demo_json). The browser
 displays the JSON data:
 
 ![demo json in response](https://curriculum-content.s3.amazonaws.com/7159/python-p4-v2-flask-sqlalchemy/demo_json.png)
@@ -277,14 +278,14 @@ We'll also include an error response if the pet is not found.
 def pet_by_id(id):
     pet = Pet.query.filter(Pet.id == id).first()
 
-    if not pet:
-        body = {'message': f'Pet {id} not found.'}
-        status = 404
-    else:
+    if pet:
         body = {'id': pet.id,
                 'name': pet.name,
                 'species': pet.species}
         status = 200
+    else:
+        body = {'message': f'Pet {id} not found.'}
+        status = 404
 
     return make_response(body, status)
 ```
@@ -349,12 +350,9 @@ from models import db, Pet
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.json.compact = False
 
 migrate = Migrate(app, db)
-
 db.init_app(app)
-
 
 @app.route('/')
 def index():
@@ -365,17 +363,16 @@ def index():
 def pet_by_id(id):
     pet = Pet.query.filter(Pet.id == id).first()
 
-    if not pet:
-        body = {'message': f'Pet {id} not found.'}
-        status = 404
-    else:
+    if pet:
         body = {'id': pet.id,
                 'name': pet.name,
                 'species': pet.species}
         status = 200
+    else:
+        body = {'message': f'Pet {id} not found.'}
+        status = 404
 
     return make_response(body, status)
-
 
 @app.route('/species/<string:species>')
 def pet_by_species(species):
@@ -389,7 +386,6 @@ def pet_by_species(species):
             'pets': pets
             }
     return make_response(body, 200)
-
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
